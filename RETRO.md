@@ -20,4 +20,4 @@ In this project, I improved my understanding of Express Router, CRUD, status cod
 
 At first, working with JSON files and saving data was difficult for me. I learned how to use `fs` to read and write the JSON file.
 
-I also learned how Query Parameters work for Search and Filter.
+I also learned how Query Parameters work for Search and Filter. 
