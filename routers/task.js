@@ -1,12 +1,28 @@
 const express = require("express");
 const { allDataTask } = require("../data/task");
 const crypto = require("crypto");
+const fs = require("fs");
 
 const taskRouter = express.Router();
-
 taskRouter.get("/list", (request, response) => {
+  const search = request.query.search;
+  const completed = request.query.completed;
+
+  if (search) {
+    const result = allDataTask.filter((el) =>
+      el.title.toLowerCase().includes(search.toLowerCase()),
+    );
+
+    return response.status(200).json(result);
+  }
+  if (completed !== undefined) {
+    const result = allDataTask.filter(
+      (el) => el.completed === (completed === "true"),
+    );
+
+    return response.status(200).json(result);
+  }
   response.status(200).json(allDataTask);
-  console.log("suucces");
 });
 
 taskRouter.get("/detail/:id", (request, response) => {
@@ -36,6 +52,9 @@ taskRouter.post("/create", (request, response) => {
     createdAt: new Date(),
     attachmentPath: body.attachmentPath,
   });
+
+  fs.writeFileSync("./data/tasks.json", JSON.stringify(allDataTask, null, 2));
+
   response.status(201).json(allDataTask);
 });
 
@@ -55,6 +74,8 @@ taskRouter.patch("/update/:id", (request, response) => {
   toDoRecord.title = body.title;
   toDoRecord.completed = body.completed;
 
+  fs.writeFileSync("./data/tasks.json", JSON.stringify(allDataTask, null, 2));
+
   response.status(200).json(toDoRecord);
 });
 taskRouter.delete("/delete/:id", (request, response) => {
@@ -71,6 +92,8 @@ taskRouter.delete("/delete/:id", (request, response) => {
   const index = allDataTask.indexOf(record);
 
   allDataTask.splice(index, 1);
+
+  fs.writeFileSync("./data/tasks.json", JSON.stringify(allDataTask, null, 2));
 
   response.status(200).json(allDataTask);
 });

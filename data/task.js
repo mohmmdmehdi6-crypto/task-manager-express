@@ -1,11 +1,7 @@
-let allDataTask = [
-  {
-    id: 1,
-    title: "homework",
-    completed: false,
-    createdAt: new Date(),
-    attachmentPath: "/files/6065799.jpg",
-  },
-];
+const fs = require("fs");
+
+const data = fs.readFileSync("./data/tasks.json", "utf-8");
+
+let allDataTask = JSON.parse(data);
 
 module.exports = { allDataTask };
