@@ -63,7 +63,7 @@ taskRouter.post("/create", (request, response) => {
   response.status(201).json(allDataTask);
 });
 
-taskRouter.patch("/update/:id", (request, response) => {
+taskRouter.put("/update/:id", (request, response) => {
   const id = request.params.id;
 
   const toDoRecord = allDataTask.find((el) => el.id == id);
@@ -77,6 +77,25 @@ taskRouter.patch("/update/:id", (request, response) => {
   const body = request.body;
 
   toDoRecord.title = body.title;
+
+  fs.writeFileSync("./data/tasks.json", JSON.stringify(allDataTask, null, 2));
+
+  response.status(200).json(toDoRecord);
+});
+
+taskRouter.patch("/update/:id", (request, response) => {
+  const id = request.params.id;
+
+  const toDoRecord = allDataTask.find((el) => el.id == id);
+
+  if (!toDoRecord) {
+    return response.status(404).json({
+      message: "Task not found",
+    });
+  }
+
+  const body = request.body;
+
   toDoRecord.completed = body.completed;
 
   fs.writeFileSync("./data/tasks.json", JSON.stringify(allDataTask, null, 2));
