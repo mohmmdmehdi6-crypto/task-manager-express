@@ -12,6 +12,8 @@ createdAt
 ## API Routes
 
 GET /api/tasks/list -> Get all tasks
+GET /api/tasks/list?query=home
+GET /api/tasks/list?completed=true
 GET /api/tasks/detail/:id -> Get one task
 POST /api/tasks/create -> Create a new task
 PATCH /api/tasks/update/:id -> Update a task

@@ -5,13 +5,18 @@ const fs = require("fs");
 
 const taskRouter = express.Router();
 taskRouter.get("/list", (request, response) => {
-  const search = request.query.search;
+  const search = request.query.query;
   const completed = request.query.completed;
-
   if (search) {
     const result = allDataTask.filter((el) =>
       el.title.toLowerCase().includes(search.toLowerCase()),
     );
+
+    if (result.length === 0) {
+      return response.status(404).json({
+        message: "Task not found",
+      });
+    }
 
     return response.status(200).json(result);
   }
