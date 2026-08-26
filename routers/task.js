@@ -2,6 +2,7 @@ const express = require("express");
 const { allDataTask } = require("../data/task");
 const crypto = require("crypto");
 const fs = require("fs");
+const { uploader } = require("../utils/files.util");
 
 const taskRouter = express.Router();
 taskRouter.get("/list", (request, response) => {
@@ -62,7 +63,25 @@ taskRouter.post("/create", (request, response) => {
 
   response.status(201).json(allDataTask);
 });
+taskRouter.post("/upload/:id", uploader.single("file"), (request, response) => {
+  const id = request.params.id;
 
+  const record = allDataTask.find((el) => el.id == id);
+
+  if (!record) {
+    return response.status(404).json({
+      message: "Task not found",
+    });
+  }
+
+  const file = request.file;
+
+  record.attachmentPath = `/files/${file.filename}`;
+
+  fs.writeFileSync("./data/tasks.json", JSON.stringify(allDataTask, null, 2));
+
+  response.status(200).json(record);
+});
 taskRouter.put("/update/:id", (request, response) => {
   const id = request.params.id;
 
@@ -113,9 +132,10 @@ taskRouter.delete("/delete/:id", (request, response) => {
     });
   }
 
-  const index = allDataTask.indexOf(record);
+  const newData = allDataTask.filter((el) => el.id != id);
 
-  allDataTask.splice(index, 1);
+  allDataTask.length = 0;
+  allDataTask.push(...newData);
 
   fs.writeFileSync("./data/tasks.json", JSON.stringify(allDataTask, null, 2));
 

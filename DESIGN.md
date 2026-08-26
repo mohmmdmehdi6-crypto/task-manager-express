@@ -16,6 +16,7 @@ GET /api/tasks/list?query=home -> Search tasks
 GET /api/tasks/list?completed=true -> Filter tasks by completion status
 GET /api/tasks/detail/:id -> Get one task
 POST /api/tasks/create -> Create a new task
+POST /api/tasks/upload/:id -> Upload a file for a specific task
 PUT /api/tasks/update/:id -> Update the task title
 PATCH /api/tasks/update/:id -> Update the task completion status
 DELETE /api/tasks/delete/:id -> Delete a task
