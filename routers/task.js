@@ -1,144 +1,21 @@
 const express = require("express");
-const { allDataTask } = require("../data/task");
-const crypto = require("crypto");
-const fs = require("fs");
 const { uploader } = require("../utils/files.util");
-
+const taskController = require("../controllers/task.controller");
 const taskRouter = express.Router();
-taskRouter.get("/list", (request, response) => {
-  const search = request.query.query;
-  const completed = request.query.completed;
-  if (search) {
-    const result = allDataTask.filter((el) =>
-      el.title.toLowerCase().includes(search.toLowerCase()),
-    );
 
-    if (result.length === 0) {
-      return response.status(404).json({
-        message: "Task not found",
-      });
-    }
+taskRouter.get("/list", taskController.getAllTasks);
 
-    return response.status(200).json(result);
-  }
-  if (completed !== undefined) {
-    const result = allDataTask.filter(
-      (el) => el.completed === (completed === "true"),
-    );
+taskRouter.get("/detail/:id", taskController.getTaskById);
 
-    return response.status(200).json(result);
-  }
-  response.status(200).json(allDataTask);
-});
+taskRouter.post("/create", taskController.createTasks);
+taskRouter.post(
+  "/upload/:id",
+  uploader.single("file"),
+  taskController.uploadTaskFile,
+);
+taskRouter.put("/update/:id", taskController.updateTaskTitle);
 
-taskRouter.get("/detail/:id", (request, response) => {
-  const id = request.params.id;
-  const record = allDataTask.find((el) => el.id == id);
-  if (!record) {
-    response.status(404).json({
-      message: "Task not found",
-    });
-  } else {
-    response.status(200).json(record);
-  }
-});
+taskRouter.patch("/update/:id", taskController.updateTaskCompleted);
+taskRouter.delete("/delete/:id", taskController.deleteTask);
 
-taskRouter.post("/create", (request, response) => {
-  const body = request.body;
-
-  if (!body.title) {
-    return response.status(400).json({
-      message: "title is required",
-    });
-  }
-  allDataTask.push({
-    id: crypto.randomInt(1000, 9999),
-    title: body.title,
-    completed: false,
-    createdAt: new Date(),
-    attachmentPath: body.attachmentPath,
-  });
-
-  fs.writeFileSync("./data/tasks.json", JSON.stringify(allDataTask, null, 2));
-
-  response.status(201).json(allDataTask);
-});
-taskRouter.post("/upload/:id", uploader.single("file"), (request, response) => {
-  const id = request.params.id;
-
-  const record = allDataTask.find((el) => el.id == id);
-
-  if (!record) {
-    return response.status(404).json({
-      message: "Task not found",
-    });
-  }
-
-  const file = request.file;
-
-  record.attachmentPath = `/files/${file.filename}`;
-
-  fs.writeFileSync("./data/tasks.json", JSON.stringify(allDataTask, null, 2));
-
-  response.status(200).json(record);
-});
-taskRouter.put("/update/:id", (request, response) => {
-  const id = request.params.id;
-
-  const toDoRecord = allDataTask.find((el) => el.id == id);
-
-  if (!toDoRecord) {
-    return response.status(404).json({
-      message: "Task not found",
-    });
-  }
-
-  const body = request.body;
-
-  toDoRecord.title = body.title;
-
-  fs.writeFileSync("./data/tasks.json", JSON.stringify(allDataTask, null, 2));
-
-  response.status(200).json(toDoRecord);
-});
-
-taskRouter.patch("/update/:id", (request, response) => {
-  const id = request.params.id;
-
-  const toDoRecord = allDataTask.find((el) => el.id == id);
-
-  if (!toDoRecord) {
-    return response.status(404).json({
-      message: "Task not found",
-    });
-  }
-
-  const body = request.body;
-
-  toDoRecord.completed = body.completed;
-
-  fs.writeFileSync("./data/tasks.json", JSON.stringify(allDataTask, null, 2));
-
-  response.status(200).json(toDoRecord);
-});
-taskRouter.delete("/delete/:id", (request, response) => {
-  const id = request.params.id;
-
-  const record = allDataTask.find((el) => el.id == id);
-
-  if (!record) {
-    return response.status(404).json({
-      message: "Task not found",
-    });
-  }
-
-  const newData = allDataTask.filter((el) => el.id != id);
-
-  allDataTask.length = 0;
-  allDataTask.push(...newData);
-
-  fs.writeFileSync("./data/tasks.json", JSON.stringify(allDataTask, null, 2));
-
-  response.status(200).json(allDataTask);
-});
 module.exports = { taskRouter };

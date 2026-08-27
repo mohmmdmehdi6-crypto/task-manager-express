@@ -8,6 +8,7 @@ id
 title
 completed
 createdAt
+attachmentPath
 
 ## API Routes
 
@@ -24,9 +25,13 @@ DELETE /api/tasks/delete/:id -> Delete a task
 ## Folder Structure
 
 index.js -> Main Express file
-data/ -> Task data
-routes/ -> Task routes
+data/ -> Task data and JSON persistence
+routers/ -> Task routes
+controllers/ -> Request logic and controllers
+utils/ -> File upload utilities
+uploads/ -> Uploaded files
 DESIGN.md -> Project design
+RETRO.md -> Project reflection
 
 ## Status Codes
 
@@ -34,4 +39,3 @@ DESIGN.md -> Project design
 201 -> Task created successfully
 400 -> Bad request / Invalid data
 404 -> Task not found
-
