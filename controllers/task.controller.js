@@ -1,7 +1,8 @@
 const { allDataTask } = require("../data/task");
 const crypto = require("crypto");
 const fs = require("fs");
-
+const validator = require("express-validator");
+const { customError } = require("../utils/errorHandler");
 const getAllTasks = (request, response) => {
   const search = request.query.search;
   const completed = request.query.completed;
@@ -27,17 +28,26 @@ const getAllTasks = (request, response) => {
 const getTaskById = (request, response) => {
   const id = request.params.id;
   const record = allDataTask.find((el) => el.id == id);
-  if (!record) {
-    response.status(404).json({
-      message: "Task not found",
-    });
-  } else {
-    response.status(200).json(record);
+  const errors = validator.validationResult(request);
+
+  if (!errors.isEmpty()) {
+    return response.status(422).json(errors);
   }
+  if (!record) {
+    customError("Task not found", 404);
+  }
+
+  response.status(200).json(record);
 };
 
 const createTasks = (request, response) => {
   const body = request.body;
+
+  const errors = validator.validationResult(request);
+
+  if (!errors.isEmpty()) {
+    return response.status(422).json(errors);
+  }
 
   if (!body.title) {
     return response.status(400).json({
@@ -59,14 +69,17 @@ const createTasks = (request, response) => {
 };
 
 const uploadTaskFile = (request, response) => {
+  const errors = validator.validationResult(request);
+
+  if (!errors.isEmpty()) {
+    return response.status(422).json(errors);
+  }
   const id = request.params.id;
 
   const record = allDataTask.find((el) => el.id == id);
 
   if (!record) {
-    return response.status(404).json({
-      message: "Task not found",
-    });
+    customError("Task not found", 404);
   }
 
   const file = request.file;
@@ -83,10 +96,13 @@ const updateTaskTitle = (request, response) => {
 
   const toDoRecord = allDataTask.find((el) => el.id == id);
 
+  const errors = validator.validationResult(request);
+
+  if (!errors.isEmpty()) {
+    return response.status(422).json(errors);
+  }
   if (!toDoRecord) {
-    return response.status(404).json({
-      message: "Task not found",
-    });
+    customError("Task not found", 404);
   }
 
   const body = request.body;
@@ -102,10 +118,13 @@ const updateTaskCompleted = (request, response) => {
 
   const toDoRecord = allDataTask.find((el) => el.id == id);
 
+  const errors = validator.validationResult(request);
+
+  if (!errors.isEmpty()) {
+    return response.status(422).json(errors);
+  }
   if (!toDoRecord) {
-    return response.status(404).json({
-      message: "Task not found",
-    });
+    customError("Task not found", 404);
   }
 
   const body = request.body;
@@ -118,14 +137,17 @@ const updateTaskCompleted = (request, response) => {
 };
 
 const deleteTask = (request, response) => {
+  const errors = validator.validationResult(request);
+
+  if (!errors.isEmpty()) {
+    return response.status(422).json(errors);
+  }
   const id = request.params.id;
 
   const record = allDataTask.find((el) => el.id == id);
 
   if (!record) {
-    return response.status(404).json({
-      message: "Task not found",
-    });
+    customError("Task not found", 404);
   }
 
   const newData = allDataTask.filter((el) => el.id != id);

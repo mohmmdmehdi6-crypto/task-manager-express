@@ -1,25 +1,63 @@
 const express = require("express");
+const validator = require("express-validator");
 const { uploader } = require("../utils/files.util");
 const taskController = require("../controllers/task.controller");
-
 const taskRouter = express.Router();
 
 taskRouter.get("/", taskController.getAllTasks);
 
-taskRouter.get("/:id", taskController.getTaskById);
-
-taskRouter.post("/", taskController.createTasks);
-
-taskRouter.post(
-  "/upload/:id",
-  uploader.single("file"),
-  taskController.uploadTaskFile
+taskRouter.get(
+  "/:id",
+  [validator.param("id").isInt().withMessage("id must be a number")],
+  taskController.getTaskById,
 );
 
-taskRouter.put("/:id", taskController.updateTaskTitle);
+taskRouter.post(
+  "/",
+  [
+    validator
+      .body("title")
+      .isString()
+      .isLength({ min: 1, max: 50 })
+      .withMessage("title is invalid"),
+  ],
+  taskController.createTasks,
+);
+taskRouter.post(
+  "/upload/:id",
+  [validator.param("id").isInt().withMessage("id must be a number")],
+  uploader.single("file"),
+  taskController.uploadTaskFile,
+);
 
-taskRouter.patch("/:id", taskController.updateTaskCompleted);
+taskRouter.put(
+  "/:id",
+  [
+    validator.param("id").isInt().withMessage("id must be a number"),
 
-taskRouter.delete("/:id", taskController.deleteTask);
+    validator
+      .body("title")
+      .isString()
+      .isLength({ min: 1, max: 50 })
+      .withMessage("title is invalid"),
+  ],
+  taskController.updateTaskTitle,
+);
+taskRouter.patch(
+  "/:id",
+  [
+    validator.param("id").isInt().withMessage("id must be a number"),
 
+    validator
+      .body("completed")
+      .isBoolean()
+      .withMessage("completed must be boolean"),
+  ],
+  taskController.updateTaskCompleted,
+);
+taskRouter.delete(
+  "/:id",
+  [validator.param("id").isInt().withMessage("id must be a number")],
+  taskController.deleteTask,
+);
 module.exports = { taskRouter };
