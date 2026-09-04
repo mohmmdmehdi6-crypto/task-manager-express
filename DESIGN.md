@@ -28,7 +28,7 @@ index.js -> Main Express file
 data/ -> Task data and JSON persistence
 routers/ -> Task routes
 controllers/ -> Request logic and controllers
-utils/ -> File upload utilities
+utils/ -> File upload and error handling utilities
 uploads/ -> Uploaded files
 DESIGN.md -> Project design
 RETRO.md -> Project reflection
