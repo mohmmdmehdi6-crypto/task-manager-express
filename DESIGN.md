@@ -4,23 +4,23 @@
 
 Each task has:
 
-id
-title
-completed
-createdAt
-attachmentPath
+- id
+- title
+- completed
+- createdAt
+- attachmentPath
 
 ## API Routes
 
-GET /api/tasks/list -> Get all tasks
-GET /api/tasks/list?query=home -> Search tasks
-GET /api/tasks/list?completed=true -> Filter tasks by completion status
-GET /api/tasks/detail/:id -> Get one task
-POST /api/tasks/create -> Create a new task
+GET /api/tasks -> Get all tasks
+GET /api/tasks?search=home -> Search tasks
+GET /api/tasks?completed=true -> Filter tasks by completion status
+GET /api/tasks/:id -> Get one task
+POST /api/tasks -> Create a new task
 POST /api/tasks/upload/:id -> Upload a file for a specific task
-PUT /api/tasks/update/:id -> Update the task title
-PATCH /api/tasks/update/:id -> Update the task completion status
-DELETE /api/tasks/delete/:id -> Delete a task
+PUT /api/tasks/:id -> Update the task title
+PATCH /api/tasks/:id -> Update the task completion status
+DELETE /api/tasks/:id -> Delete a task
 
 ## Folder Structure
 

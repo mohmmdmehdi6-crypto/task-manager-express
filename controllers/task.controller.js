@@ -3,21 +3,17 @@ const crypto = require("crypto");
 const fs = require("fs");
 
 const getAllTasks = (request, response) => {
-  const search = request.query.query;
+  const search = request.query.search;
   const completed = request.query.completed;
+
   if (search) {
     const result = allDataTask.filter((el) =>
       el.title.toLowerCase().includes(search.toLowerCase()),
     );
 
-    if (result.length === 0) {
-      return response.status(404).json({
-        message: "Task not found",
-      });
-    }
-
     return response.status(200).json(result);
   }
+
   if (completed !== undefined) {
     const result = allDataTask.filter(
       (el) => el.completed === (completed === "true"),
@@ -25,7 +21,8 @@ const getAllTasks = (request, response) => {
 
     return response.status(200).json(result);
   }
-  response.status(200).json(allDataTask);
+
+  return response.status(200).json(allDataTask);
 };
 const getTaskById = (request, response) => {
   const id = request.params.id;
@@ -47,17 +44,18 @@ const createTasks = (request, response) => {
       message: "title is required",
     });
   }
-  allDataTask.push({
+  const newTask = {
     id: crypto.randomInt(1000, 9999),
     title: body.title,
     completed: false,
     createdAt: new Date(),
-    attachmentPath: body.attachmentPath,
-  });
+  };
+
+  allDataTask.push(newTask);
 
   fs.writeFileSync("./data/tasks.json", JSON.stringify(allDataTask, null, 2));
 
-  response.status(201).json(allDataTask);
+  response.status(201).json(newTask);
 };
 
 const uploadTaskFile = (request, response) => {
